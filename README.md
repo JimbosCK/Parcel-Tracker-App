@@ -1,7 +1,5 @@
 # Parcel Tracker
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 A simple web application for creating and tracking parcels.
 
 ## Overview
