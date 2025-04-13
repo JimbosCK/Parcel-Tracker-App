@@ -40,16 +40,16 @@
                         <tr>
                             <th>Date/Time</th>
                             <th>Location</th>
-                            <th>Status</th>
                             <th>Comments</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="entry : ${history}">
                             <td th:text="${#temporals.format(entry.dateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
                             <td th:text="${entry.location}"></td>
-                            <td th:text="${entry.status}"></td>
                             <td th:text="${entry.comments}"></td>
+                            <td th:text="${entry.status}"></td>
                         </tr>
                     </tbody>
                 </table>
