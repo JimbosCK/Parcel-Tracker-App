@@ -12,9 +12,9 @@ public class ParcelService {
     @Autowired
     private ParcelRepository parcelRepository;
 
-    public Parcel createParcel(String initialLocation) {
+    public Parcel createParcel(String initialLocation, String comment) {
         Parcel parcel = new Parcel(initialLocation);
-        parcel.addHistoryEntry(initialLocation, parcel.getStatus().toString(), "Parcel created");
+        parcel.addHistoryEntry(initialLocation, parcel.getStatus().toString(), comment);
         return parcelRepository.save(parcel);
     }
 

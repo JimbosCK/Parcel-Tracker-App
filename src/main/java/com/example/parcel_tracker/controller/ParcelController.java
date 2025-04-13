@@ -34,9 +34,12 @@ public class ParcelController {
     }
 
     @PostMapping("/create")
-    public String createParcel(@RequestParam String initialLocation, Model model) {
-        Parcel parcel = parcelService.createParcel(initialLocation);
+    public String createParcel(@RequestParam String initialLocation,@RequestParam String comment, Model model) {
+        Parcel parcel = parcelService.createParcel(initialLocation, comment);
+        List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
+
         model.addAttribute("parcel", parcel);
+        model.addAttribute("history", history);
         return "parcel-details.html";
     }
 
@@ -51,7 +54,7 @@ public class ParcelController {
         if (parcel != null) {
             List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
             model.addAttribute("parcel", parcel);
-            model.addAttribute("history", history); // Add the history to the model
+            model.addAttribute("history", history);
             return "parcel-details.html";
         } else {
             model.addAttribute("parcel", null);
