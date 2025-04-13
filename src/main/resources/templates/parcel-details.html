@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Parcel Tracker - Parcel Details</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+</head>
+<body>
+    <div th:replace="~{fragments :: navbar}"></div>
+    <div class="container mt-5">
+        <h1>Parcel Details</h1>
+        <div th:if="${parcel}" class="card">
+            <div class="card-body">
+                <h5 class="card-title">Tracking Information</h5>
+                <dl class="row">
+                    <dt class="col-sm-3">Tracking Code:</dt>
+                    <dd class="col-sm-9" th:text="${parcel.trackingCode}"></dd>
+
+                    <dt class="col-sm-3">Current Location:</dt>
+                    <dd class="col-sm-9" th:text="${parcel.currentLocation}"></dd>
+
+                    <dt class="col-sm-3">Status:</dt>
+                    <dd class="col-sm-9" th:text="${parcel.status}"></dd>
+
+                    <dt class="col-sm-3">Last Updated:</dt>
+                    <dd class="col-sm-9" th:text="${#temporals.format(parcel.lastUpdated, 'yyyy-MM-dd HH:mm:ss')}"></dd>
+                </dl>
+            </div>
+        </div>
+        <div th:unless="${parcel}" class="alert alert-warning">
+            Parcel not found. ∄
+        </div>
+        <div class="mt-3">
+            <a href="/parcel/create" class="btn btn-success">Create a new parcel</a>
+            <a href="/parcel/track" class="btn btn-secondary">Track another parcel</a>
+        </div>
+    </div>
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

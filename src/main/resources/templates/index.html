@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Parcel Tracker - Home</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+</head>
+<body>
+    <div th:replace="~{fragments :: navbar}"></div>
+    <div class="container mt-5">
+        <h1>Welcome to Parcel Tracker</h1>
+        <p>Parcel Tracker is a simple application for creating and tracking parcels.</p>
+        <p>Use the navigation menu to create a new parcel or track an existing one.</p>
+        <div class="mt-4">
+            <a href="/parcel/create" class="btn btn-primary me-2">Create Parcel</a>
+            <a href="/parcel/track" class="btn btn-secondary">Track Parcel</a>
+        </div>
+    </div>
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

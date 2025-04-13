@@ -1,0 +1,55 @@
+:root {
+    --bs-body-bg: #1a1a1a;
+    --bs-body-color: #e0e0e0;
+    --bs-primary: #ff9800;
+    --bs-primary-rgb: 255, 152, 0;
+    --bs-navbar-bg: #121212;
+    --bs-navbar-color: #e0e0e0;
+    --bs-btn-bg: #ff9800;
+    --bs-btn-border-color: #ff9800;
+    --bs-btn-color: #1a1a1a;
+    --bs-btn-hover-bg: #f57c00;
+    --bs-btn-hover-border-color: #f57c00;
+    --bs-card-bg: #212121;
+    --bs-card-color: #e0e0e0;
+}
+
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.navbar {
+    background-color: var(--bs-navbar-bg);
+    color: var(--bs-navbar-color);
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+    color: #e0e0e0; /* Always white */
+}
+
+.navbar-brand:hover, .navbar-nav .nav-link:hover {
+    color: #ff9800; /* Orange on hover */
+}
+
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: var(--bs-btn-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--bs-btn-hover-bg);
+    border-color: var(--bs-btn-hover-border-color);
+}
+
+.card {
+    background-color: var(--bs-card-bg);
+    color: var(--bs-card-color);
+}
+
+.alert-warning {
+    background-color: #333;
+    color: #ff9800;
+    border-color: #ff9800;
+}

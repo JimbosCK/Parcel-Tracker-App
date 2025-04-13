@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Parcel Tracker - Create Parcel</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+</head>
+<body>
+    <div th:replace="~{fragments :: navbar}"></div>
+    <div class="container mt-5">
+        <h1>Create New Parcel</h1>
+        <p>Enter the initial location of your parcel to generate a unique tracking code.</p>
+        <form action="/parcel/create" method="post">
+            <div class="mb-3">
+                <label for="initialLocation" class="form-label">Initial Location:</label>
+                <input type="text" id="initialLocation" name="initialLocation" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Parcel</button>
+        </form>
+    </div>
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

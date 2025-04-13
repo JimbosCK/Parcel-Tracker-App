@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Parcel Tracker - Track Parcel</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+</head>
+<body>
+    <div th:replace="~{fragments :: navbar}"></div>
+    <div class="container mt-5">
+        <h1>Track Parcel</h1>
+        <p>Enter your parcel's tracking code to view its current status and location.</p>
+        <form action="/parcel/details" method="get">
+            <div class="mb-3">
+                <label for="trackingCode" class="form-label">Tracking Code:</label>
+                <input type="text" id="trackingCode" name="trackingCode" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Track</button>
+        </form>
+    </div>
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
