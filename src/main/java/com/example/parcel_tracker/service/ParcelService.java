@@ -25,23 +25,15 @@ public class ParcelService {
     public Parcel updateParcel(String trackingCode, String currentLocation, ParcelStatusEnum status, String comments) {
         Parcel parcel = parcelRepository.findByTrackingCode(trackingCode);
         if (parcel != null) {
-            boolean locationChanged = !parcel.getCurrentLocation().equals(currentLocation);
-            boolean statusChanged = !parcel.getStatus().equals(status);
-
-            if (locationChanged) {
-                parcel.addHistoryEntry(currentLocation, status.toString(), "Location updated" + (comments != null && !comments.isEmpty() ? ": " + comments : ""));
-                parcel.setCurrentLocation(currentLocation);
-            }
-            if (statusChanged) {
-                parcel.addHistoryEntry(currentLocation, status.toString(), "Status updated" + (comments != null && !comments.isEmpty() ? ": " + comments : ""));
-                parcel.setStatus(status);
-            }
+            comments = (comments != null && !comments.isEmpty() ? comments : "");
+            
+            parcel.setCurrentLocation(currentLocation);
+            parcel.setStatus(status);
+            parcel.addHistoryEntry(currentLocation, status.toString(), comments);
+                
             return parcelRepository.save(parcel);
         }
         return null;
     }
 
-    public Parcel updateParcel(String trackingCode, String currentLocation, ParcelStatusEnum status) {
-        return updateParcel(trackingCode, currentLocation, status, null);
-    }
 }

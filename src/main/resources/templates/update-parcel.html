@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Parcel Tracker - Parcel Update</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+    <style>
+        .history-table th, .history-table td {
+            color: white; /* Set text color to white */
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments :: navbar}"></div>
+
+    <div class="container mt-5">
+        <h1>Parcel Update</h1>
+        <div th:if="${parcel}" class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Tracking Information</h5>
+                <dl class="row">
+                    <dt class="col-sm-3">Tracking Code:</dt>
+                    <dd class="col-sm-9" th:text="${parcel.trackingCode}"></dd>
+
+                    <dt class="col-sm-3">Last Updated:</dt>
+                    <dd class="col-sm-9" th:text="${#temporals.format(parcel.lastUpdated, 'yyyy-MM-dd HH:mm:ss')}"></dd>
+                </dl>
+            </div>
+        </div>
+
+        <form th:action="@{/parcel/update/{trackingCode}(trackingCode=${parcel.trackingCode})}" method="post">
+            <input type="hidden" name="_method" value="post" />
+            <div class="mb-3">
+                <label for="currentLocation" class="form-label">New Location:</label>
+                <input type="text" id="currentLocation" name="currentLocation" class="form-control" th:value="${parcel.currentLocation}" required>
+            </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">New Status:</label>
+                <select class="form-select" id="status" name="status" required>
+                    <option th:each="statusOption : ${T(com.example.parcel_tracker.model.ParcelStatusEnum).values()}"
+                            th:value="${statusOption}"
+                            th:text="${statusOption}"
+                            th:selected="${statusOption == parcel.status}">
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="comments" class="form-label">Comment (Optional):</label>
+                <input type="text" id="comments" name="comments" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Update Parcel</button>
+        </form>
+
+        <div th:if="${parcel}" class="mt-3">
+            <a href="/parcel/" class="btn btn-secondary">Cancel</a>
+        </div>
+
+        <div th:unless="${parcel}" class="alert alert-warning">
+            Parcel not found.
+        </div>
+    </div>
+    <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

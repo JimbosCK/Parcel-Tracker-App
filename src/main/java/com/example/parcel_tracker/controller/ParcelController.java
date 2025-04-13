@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 
@@ -62,13 +63,42 @@ public class ParcelController {
         }
     }
 
-    @PutMapping("/update/{trackingCode}")
-    public ResponseEntity<Parcel> updateParcel(@PathVariable String trackingCode, @RequestParam String currentLocation, @RequestParam ParcelStatusEnum status, @RequestParam(required = false) String comments) {
+    @GetMapping("/details/{trackingCode}")
+    public String showParcelDetails(@PathVariable String trackingCode, Model model) {
+        Parcel parcel = parcelService.getParcel(trackingCode);
+        if (parcel != null) {
+            List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
+            model.addAttribute("parcel", parcel);
+            model.addAttribute("history", history);
+            return "parcel-details.html";
+        } else {
+            model.addAttribute("errorMessage", "Parcel with tracking code " + trackingCode + " not found.");
+            return "parcel-track"; 
+        }
+    }
+
+    @GetMapping("/update/{trackingCode}")
+    public String showUpdateParcelForm(@PathVariable String trackingCode, Model model) {
+        Parcel parcel = parcelService.getParcel(trackingCode);
+        if (parcel != null) {
+            model.addAttribute("parcel", parcel);
+            return "update-parcel.html";
+        } else {
+            model.addAttribute("parcel", null);
+            return "update-parcel.html"; 
+        }
+}
+
+@PostMapping("/update/{trackingCode}")
+    public RedirectView updateParcel(@PathVariable String trackingCode,
+                                     @RequestParam String currentLocation,
+                                     @RequestParam ParcelStatusEnum status,
+                                     @RequestParam(required = false) String comments) {
         Parcel parcel = parcelService.updateParcel(trackingCode, currentLocation, status, comments);
         if (parcel != null) {
-            return ResponseEntity.ok(parcel);
+            return new RedirectView("/parcel/details/" + trackingCode);
         } else {
-            return ResponseEntity.notFound().build();
+            return new RedirectView("/parcel/track?error=notfound");
         }
     }
     
