@@ -65,10 +65,6 @@ To run the application locally, follow these steps:
 * Integrate with a real-world mapping service.
 * More detailed parcel status updates.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Author
 
 [Dimitris C. Karakasis/JimbosCK]
