@@ -19,7 +19,6 @@ This project is intended as a learning exercise and a basic implementation of a 
 * **Frontend:** HTML, CSS, Bootstrap
 * **Build Tool:** Gradle
 * **Database:** H2 (in-memory for development)
- on your current state*)
 
 ## Getting Started
 
