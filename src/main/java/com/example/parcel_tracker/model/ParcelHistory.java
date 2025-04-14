@@ -25,7 +25,6 @@ public class ParcelHistory {
 
     private String comments;
 
-    // Constructors
     public ParcelHistory() {
         this.dateTime = LocalDateTime.now();
     }

@@ -30,7 +30,7 @@ public class ParcelService {
             parcel.setCurrentLocation(currentLocation);
             parcel.setStatus(status);
             parcel.addHistoryEntry(currentLocation, status.toString(), comments);
-                
+            
             return parcelRepository.save(parcel);
         }
         return null;

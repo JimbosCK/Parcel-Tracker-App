@@ -27,7 +27,6 @@ public class Parcel {
     @OneToMany(mappedBy = "parcel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParcelHistory> history = new ArrayList<>();
 
-    // Constructors
     public Parcel() {
         this.lastUpdated = LocalDateTime.now();
     }
@@ -90,7 +89,6 @@ public class Parcel {
         this.history = history;
     }
 
-    // Helper method to add history entry
     public void addHistoryEntry(String location, String status, String comments) {
         ParcelHistory entry = new ParcelHistory(this, location, status, comments);
         this.history.add(entry);
@@ -102,7 +100,6 @@ public class Parcel {
     }
 
     private String generateTrackingCode() {
-        // Simple random tracking code generation (you might want a more robust solution)
         return java.util.UUID.randomUUID().toString().substring(0, 10).toUpperCase();
     }
 }

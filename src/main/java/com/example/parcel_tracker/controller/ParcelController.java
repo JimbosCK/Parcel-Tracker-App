@@ -6,7 +6,6 @@ import com.example.parcel_tracker.model.ParcelStatusEnum;
 import com.example.parcel_tracker.service.ParcelService;
 import com.example.parcel_tracker.repository.ParcelHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -90,10 +89,8 @@ public class ParcelController {
 }
 
 @PostMapping("/update/{trackingCode}")
-    public RedirectView updateParcel(@PathVariable String trackingCode,
-                                     @RequestParam String currentLocation,
-                                     @RequestParam ParcelStatusEnum status,
-                                     @RequestParam(required = false) String comments) {
+    public RedirectView updateParcel(@PathVariable String trackingCode, @RequestParam String currentLocation, 
+    @RequestParam ParcelStatusEnum status, @RequestParam(required = false) String comments) {
         Parcel parcel = parcelService.updateParcel(trackingCode, currentLocation, status, comments);
         if (parcel != null) {
             return new RedirectView("/parcel/details/" + trackingCode);
@@ -101,5 +98,4 @@ public class ParcelController {
             return new RedirectView("/parcel/track?error=notfound");
         }
     }
-    
 }
