@@ -13,6 +13,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 
+
 @Controller
 @RequestMapping("/parcel")
 public class ParcelController {
@@ -98,4 +99,13 @@ public class ParcelController {
             return new RedirectView("/parcel/track?error=notfound");
         }
     }
+
+    @GetMapping("/list")
+    @ResponseBody
+    public List<Parcel> postMethodName(@RequestParam ParcelStatusEnum status) {
+        List<Parcel> parcels = parcelService.getParcelsByStatus(status);
+        
+        return parcels;
+    }
+    
 }

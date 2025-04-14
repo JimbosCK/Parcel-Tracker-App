@@ -3,6 +3,8 @@ package com.example.parcel_tracker.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class ParcelHistory {
 
@@ -12,6 +14,7 @@ public class ParcelHistory {
 
     @ManyToOne
     @JoinColumn(name = "parcel_id", nullable = false)
+    @JsonIgnore
     private Parcel parcel;
 
     @Column(nullable = false)

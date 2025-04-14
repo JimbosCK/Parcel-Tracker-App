@@ -5,6 +5,8 @@ import com.example.parcel_tracker.model.ParcelStatusEnum;
 import com.example.parcel_tracker.repository.ParcelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.List;
+
 
 @Service
 public class ParcelService {
@@ -34,6 +36,10 @@ public class ParcelService {
             return parcelRepository.save(parcel);
         }
         return null;
+    }
+
+    public List<Parcel> getParcelsByStatus(ParcelStatusEnum status){
+        return parcelRepository.findByStatus(status);
     }
 
 }
