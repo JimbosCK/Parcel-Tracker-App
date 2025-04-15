@@ -32,6 +32,10 @@ body {
     color: #ff9800; /* Orange on hover */
 }
 
+#main-navbar{
+    margin-left: 1em !important;
+}
+
 .btn-primary {
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
