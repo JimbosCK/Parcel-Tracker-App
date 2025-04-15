@@ -6,6 +6,7 @@ import com.example.parcel_tracker.repository.ParcelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -38,8 +39,16 @@ public class ParcelService {
         return null;
     }
 
+    public Optional<Parcel> getParcelsByID(Long id){
+        return parcelRepository.findById(id);
+    }
+
     public List<Parcel> getParcelsByStatus(ParcelStatusEnum status){
         return parcelRepository.findByStatus(status);
+    }
+
+    public List<Parcel> getAllParcels() {
+        return parcelRepository.findAll();
     }
 
 }

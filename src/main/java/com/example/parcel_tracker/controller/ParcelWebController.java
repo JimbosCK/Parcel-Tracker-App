@@ -16,7 +16,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/parcel")
-public class ParcelController {
+public class ParcelWebController {
 
     @Autowired
     private ParcelService parcelService;
@@ -98,14 +98,6 @@ public class ParcelController {
         } else {
             return new RedirectView("/parcel/track?error=notfound");
         }
-    }
-
-    @GetMapping("/list")
-    @ResponseBody
-    public List<Parcel> postMethodName(@RequestParam ParcelStatusEnum status) {
-        List<Parcel> parcels = parcelService.getParcelsByStatus(status);
-        
-        return parcels;
     }
     
 }
