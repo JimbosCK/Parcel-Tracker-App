@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -35,7 +37,7 @@ public class ParcelWebController {
     }
 
     @PostMapping("/create")
-    public String createParcel(@RequestParam String initialLocation,@RequestParam String comment, Model model) {
+    public String createParcel(@RequestParam String initialLocation, @RequestParam String comment, Model model) {
         Parcel parcel = parcelService.createParcel(initialLocation, comment);
         List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
 
@@ -91,8 +93,8 @@ public class ParcelWebController {
 
 @PostMapping("/update/{trackingCode}")
     public RedirectView updateParcel(@PathVariable String trackingCode, @RequestParam String currentLocation, 
-    @RequestParam ParcelStatusEnum status, @RequestParam(required = false) String comments) {
-        Parcel parcel = parcelService.updateParcel(trackingCode, currentLocation, status, comments);
+    @RequestParam ParcelStatusEnum status, @RequestParam(required = false) String comments, @RequestParam(required = false) LocalDate etaDate) {
+        Parcel parcel = parcelService.updateParcel(trackingCode, currentLocation, status, comments, etaDate);
         if (parcel != null) {
             return new RedirectView("/parcel/details/" + trackingCode);
         } else {

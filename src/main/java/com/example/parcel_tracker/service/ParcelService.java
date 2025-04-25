@@ -5,6 +5,8 @@ import com.example.parcel_tracker.model.ParcelStatusEnum;
 import com.example.parcel_tracker.repository.ParcelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +27,11 @@ public class ParcelService {
         return parcelRepository.findByTrackingCode(trackingCode);
     }
 
-    public Parcel updateParcel(String trackingCode, String currentLocation, ParcelStatusEnum status, String comments) {
+    public Parcel updateParcel(String trackingCode, String currentLocation, ParcelStatusEnum status, String comments, LocalDate etaDate) {
         Parcel parcel = parcelRepository.findByTrackingCode(trackingCode);
         if (parcel != null) {
             comments = (comments != null && !comments.isEmpty() ? comments : "");
-            
+            parcel.setEtaDate(etaDate);
             parcel.setCurrentLocation(currentLocation);
             parcel.setStatus(status);
             parcel.addHistoryEntry(currentLocation, status.toString(), comments);

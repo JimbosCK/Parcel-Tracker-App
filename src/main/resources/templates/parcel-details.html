@@ -27,6 +27,9 @@
                     <dt class="col-sm-3">Status:</dt>
                     <dd class="col-sm-9" th:text="${parcel.status}"></dd>
 
+                    <dt class="col-sm-3">Estiamted Day of Arrival:</dt>
+                    <dd class="col-sm-9" th:text="${#temporals.format(parcel.etaDate, 'yyyy-MM-dd')}"></dd>
+                </br>
                     <dt class="col-sm-3">Last Updated:</dt>
                     <dd class="col-sm-9" th:text="${#temporals.format(parcel.lastUpdated, 'yyyy-MM-dd HH:mm:ss')}"></dd>
                 </dl>

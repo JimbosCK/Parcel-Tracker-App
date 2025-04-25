@@ -48,6 +48,10 @@
                 <label for="comments" class="form-label">Comment (Optional):</label>
                 <input type="text" id="comments" name="comments" class="form-control">
             </div>
+            <div class="mb-3">
+                <label for="etaDate" class="form-label">Estimated Date of Arrival:</label>
+                <input type="date" id="etaDate" name="etaDate" class="form-control" th:value="${parcel.etaDate}">
+            </div>
             <button type="submit" class="btn btn-primary">Update Parcel</button>
         </form>
 

@@ -1,6 +1,8 @@
 package com.example.parcel_tracker.model;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,8 @@ public class Parcel {
 
     private LocalDateTime lastUpdated;
 
+    private LocalDate etaDate;
+
     @OneToMany(mappedBy = "parcel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParcelHistory> history = new ArrayList<>();
 
@@ -36,6 +40,14 @@ public class Parcel {
         this.currentLocation = initialLocation;
         this.status = ParcelStatusEnum.PENDING;
         this.lastUpdated = LocalDateTime.now();
+    }
+
+    public Parcel(String initialLocation, LocalDate etaDate) {
+        this.trackingCode = generateTrackingCode();
+        this.currentLocation = initialLocation;
+        this.status = ParcelStatusEnum.PENDING;
+        this.lastUpdated = LocalDateTime.now();
+        this.etaDate = etaDate;
     }
 
     // Getters and Setters
@@ -101,5 +113,13 @@ public class Parcel {
 
     private String generateTrackingCode() {
         return java.util.UUID.randomUUID().toString().substring(0, 10).toUpperCase();
+    }
+
+    public LocalDate getEtaDate() {
+        return etaDate;
+    }
+
+    public void setEtaDate(LocalDate etaDate) {
+        this.etaDate = etaDate;
     }
 }
