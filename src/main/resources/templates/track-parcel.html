@@ -10,7 +10,7 @@
     <div class="container mt-5">
         <h1>Track Parcel</h1>
         <p>Enter your parcel's tracking code to view its current status and location.</p>
-        <form action="/parcel/details" method="get">
+        <form action="/parcel/details" method="get" onsubmit="trimTrackingCode()">
             <div class="mb-3">
                 <label for="trackingCode" class="form-label">Tracking Code:</label>
                 <input type="text" id="trackingCode" name="trackingCode" class="form-control" required>
@@ -19,5 +19,11 @@
         </form>
     </div>
     <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        function trimTrackingCode() {
+            const trackingCodeInput = document.getElementById('trackingCode');
+            trackingCodeInput.value = trackingCodeInput.value.trim();
+        }
+    </script>
 </body>
 </html>

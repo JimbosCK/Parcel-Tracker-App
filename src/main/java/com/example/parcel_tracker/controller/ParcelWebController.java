@@ -54,7 +54,7 @@ public class ParcelWebController {
 
     @GetMapping("/details")
     public String getParcel(@RequestParam String trackingCode, Model model) {
-        Parcel parcel = parcelService.getParcel(trackingCode);
+        Parcel parcel = parcelService.getParcel(trackingCode.trim());
         if (parcel != null) {
             List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
             ParcelWebHelper.addBarcodeToModel(parcel, model);
@@ -69,7 +69,7 @@ public class ParcelWebController {
 
     @GetMapping("/details/{trackingCode}")
     public String showParcelDetails(@PathVariable String trackingCode, Model model) {
-        Parcel parcel = parcelService.getParcel(trackingCode);
+        Parcel parcel = parcelService.getParcel(trackingCode.trim());
         if (parcel != null) {
             List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
             ParcelWebHelper.addBarcodeToModel(parcel, model);
@@ -84,7 +84,7 @@ public class ParcelWebController {
 
     @GetMapping("/update/{trackingCode}")
     public String showUpdateParcelForm(@PathVariable String trackingCode, Model model) {
-        Parcel parcel = parcelService.getParcel(trackingCode);
+        Parcel parcel = parcelService.getParcel(trackingCode.trim());
         if (parcel != null) {
             model.addAttribute("parcel", parcel);
             return "update-parcel.html";
@@ -97,9 +97,9 @@ public class ParcelWebController {
 @PostMapping("/update/{trackingCode}")
     public RedirectView updateParcel(@PathVariable String trackingCode, @RequestParam String currentLocation, 
     @RequestParam ParcelStatusEnum status, @RequestParam(required = false) String comments, @RequestParam(required = false) LocalDate etaDate) {
-        Parcel parcel = parcelService.updateParcel(trackingCode, currentLocation, status, comments, etaDate);
+        Parcel parcel = parcelService.updateParcel(trackingCode.trim(), currentLocation, status, comments, etaDate);
         if (parcel != null) {
-            return new RedirectView("/parcel/details/" + trackingCode);
+            return new RedirectView("/parcel/details/" + trackingCode.trim());
         } else {
             return new RedirectView("/parcel/track?error=notfound");
         }
