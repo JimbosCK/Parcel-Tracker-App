@@ -1,5 +1,6 @@
 package com.example.parcel_tracker.controller;
 
+import com.example.parcel_tracker.controller.Helpers.ParcelWebHelper;
 import com.example.parcel_tracker.model.Parcel;
 import com.example.parcel_tracker.model.ParcelHistory;
 import com.example.parcel_tracker.model.ParcelStatusEnum;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -40,7 +40,8 @@ public class ParcelWebController {
     public String createParcel(@RequestParam String initialLocation, @RequestParam String comment, Model model) {
         Parcel parcel = parcelService.createParcel(initialLocation, comment);
         List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
-
+        
+        ParcelWebHelper.addBarcodeToModel(parcel, model);
         model.addAttribute("parcel", parcel);
         model.addAttribute("history", history);
         return "parcel-details.html";
@@ -56,6 +57,7 @@ public class ParcelWebController {
         Parcel parcel = parcelService.getParcel(trackingCode);
         if (parcel != null) {
             List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
+            ParcelWebHelper.addBarcodeToModel(parcel, model);
             model.addAttribute("parcel", parcel);
             model.addAttribute("history", history);
             return "parcel-details.html";
@@ -70,6 +72,7 @@ public class ParcelWebController {
         Parcel parcel = parcelService.getParcel(trackingCode);
         if (parcel != null) {
             List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
+            ParcelWebHelper.addBarcodeToModel(parcel, model);
             model.addAttribute("parcel", parcel);
             model.addAttribute("history", history);
             return "parcel-details.html";

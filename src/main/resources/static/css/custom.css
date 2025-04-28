@@ -57,3 +57,16 @@ body {
     color: #ff9800;
     border-color: #ff9800;
 }
+
+.barcode-container {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+    height: auto; 
+}
+
+.barcode-container img {
+    max-width: 100%;
+    height: auto;
+}
