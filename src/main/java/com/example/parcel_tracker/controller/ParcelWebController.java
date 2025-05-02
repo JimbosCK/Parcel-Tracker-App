@@ -1,6 +1,8 @@
 package com.example.parcel_tracker.controller;
 
 import com.example.parcel_tracker.controller.Helpers.ParcelWebHelper;
+import com.example.parcel_tracker.exception.InvalidEtaDateException;
+import com.example.parcel_tracker.exception.ParcelNotFoundException;
 import com.example.parcel_tracker.model.Parcel;
 import com.example.parcel_tracker.model.ParcelHistory;
 import com.example.parcel_tracker.model.ParcelStatusEnum;
@@ -9,8 +11,9 @@ import com.example.parcel_tracker.repository.ParcelHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -70,39 +73,46 @@ public class ParcelWebController {
     @GetMapping("/details/{trackingCode}")
     public String showParcelDetails(@PathVariable String trackingCode, Model model) {
         Parcel parcel = parcelService.getParcel(trackingCode.trim());
-        if (parcel != null) {
             List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
             ParcelWebHelper.addBarcodeToModel(parcel, model);
             model.addAttribute("parcel", parcel);
             model.addAttribute("history", history);
             return "parcel-details.html";
-        } else {
-            model.addAttribute("errorMessage", "Parcel with tracking code " + trackingCode + " not found.");
-            return "parcel-track"; 
-        }
     }
 
     @GetMapping("/update/{trackingCode}")
-    public String showUpdateParcelForm(@PathVariable String trackingCode, Model model) {
-        Parcel parcel = parcelService.getParcel(trackingCode.trim());
-        if (parcel != null) {
-            model.addAttribute("parcel", parcel);
-            return "update-parcel.html";
-        } else {
-            model.addAttribute("parcel", null);
-            return "update-parcel.html"; 
-        }
-}
+    public String showUpdateForm(@PathVariable String trackingCode, Model model, RedirectAttributes redirectAttributes) {
 
-@PostMapping("/update/{trackingCode}")
-    public RedirectView updateParcel(@PathVariable String trackingCode, @RequestParam String currentLocation, 
-    @RequestParam ParcelStatusEnum status, @RequestParam(required = false) String comments, @RequestParam(required = false) LocalDate etaDate) {
-        Parcel parcel = parcelService.updateParcel(trackingCode.trim(), currentLocation, status, comments, etaDate);
-        if (parcel != null) {
-            return new RedirectView("/parcel/details/" + trackingCode.trim());
-        } else {
-            return new RedirectView("/parcel/track?error=notfound");
+        if (!model.containsAttribute("parcel")) {
+            Parcel parcel = parcelService.getParcel(trackingCode);
+            model.addAttribute("parcel", parcel);
+        }
+        return "update-parcel";
+    }
+
+    @PostMapping("/update/{trackingCode}")
+    public String updateParcel(@PathVariable String trackingCode, @RequestParam String currentLocation, @RequestParam ParcelStatusEnum status, 
+    @RequestParam(required = false) String comments, @RequestParam(required = false) LocalDate etaDate, RedirectAttributes redirectAttributes) {
+        
+        try {
+            parcelService.updateParcel(trackingCode, currentLocation, status, comments, etaDate);
+            return "redirect:/parcel/details/" + trackingCode;
+        } catch (InvalidEtaDateException e) {
+            redirectAttributes.addFlashAttribute("etaError", new FieldError(
+                    "parcel", "etaDate", e.getMessage()
+            ));
+
+            redirectAttributes.addFlashAttribute("comments", comments);
+
+            Parcel viewParcel = parcelService.getParcel(trackingCode);
+            viewParcel.setCurrentLocation(currentLocation);
+            viewParcel.setStatus(status);
+            viewParcel.setEtaDate(etaDate);
+            redirectAttributes.addFlashAttribute("parcel", viewParcel);
+
+            return "redirect:/parcel/update/" + trackingCode;
         }
     }
     
+
 }

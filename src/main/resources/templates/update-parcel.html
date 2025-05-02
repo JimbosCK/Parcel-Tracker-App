@@ -22,8 +22,9 @@
                     <dt class="col-sm-3">Tracking Code:</dt>
                     <dd class="col-sm-9" th:text="${parcel.trackingCode}"></dd>
 
-                    <dt class="col-sm-3">Last Updated:</dt>
-                    <dd class="col-sm-9" th:text="${#temporals.format(parcel.lastUpdated, 'yyyy-MM-dd HH:mm:ss')}"></dd>
+                    <dt class="col-sm-3">Creation Date:</dt>
+                    <dd class="col-sm-9" th:text="${#temporals.format(parcel.creationDate, 'yyyy-MM-dd HH:mm:ss')}"></dd>
+
                 </dl>
             </div>
         </div>
@@ -36,7 +37,7 @@
             </div>
             <div class="mb-3">
                 <label for="status" class="form-label">New Status:</label>
-                <select class="form-select" id="status" name="status" required>
+                <select class="form-select" id="status" name="status" required onchange="toggleEtaRequired()">
                     <option th:each="statusOption : ${T(com.example.parcel_tracker.model.ParcelStatusEnum).values()}"
                             th:value="${statusOption}"
                             th:text="${statusOption}"
@@ -46,11 +47,13 @@
             </div>
             <div class="mb-3">
                 <label for="comments" class="form-label">Comment (Optional):</label>
-                <input type="text" id="comments" name="comments" class="form-control">
+                <input type="text" id="comments" name="comments" class="form-control"
+                    th:value="${comments}">
             </div>
             <div class="mb-3">
                 <label for="etaDate" class="form-label">Estimated Date of Arrival:</label>
                 <input type="date" id="etaDate" name="etaDate" class="form-control" th:value="${parcel.etaDate}">
+                <div th:if="${etaError}" class="alert alert-danger mt-2" th:text="${etaError.defaultMessage}"></div>
             </div>
             <button type="submit" class="btn btn-primary">Update Parcel</button>
         </form>
@@ -65,4 +68,21 @@
     </div>
     <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
 </body>
+<script>
+    var today = new Date().toISOString().split("T")[0];
+    document.getElementById("etaDate").setAttribute("min", today);
+
+    function toggleEtaRequired() {
+            const statusDropdown = document.getElementById('status');
+            const etaDateInput = document.getElementById('etaDate');
+
+            if (statusDropdown.value === 'IN_TRANSIT') {
+                etaDateInput.setAttribute('required', '');
+            } else {
+                etaDateInput.removeAttribute('required');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', toggleEtaRequired);
+</script>
 </html>

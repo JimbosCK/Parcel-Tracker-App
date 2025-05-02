@@ -28,12 +28,13 @@
 
                                 <dt class="col-sm-4">Status:</dt>
                                 <dd class="col-sm-8" th:text="${parcel.status}"></dd>
+                                
+                                <dt class="col-sm-4">Creation Date:</dt>
+                                <dd class="col-sm-8" th:text="${#temporals.format(parcel.creationDate, 'yyyy-MM-dd HH:mm:ss')}"></dd>
 
                                 <dt class="col-sm-4">Estiamted Day of Arrival:</dt>
                                 <dd class="col-sm-8" th:text="${#temporals.format(parcel.etaDate, 'yyyy-MM-dd')}"></dd>
 
-                                <dt class="col-sm-4">Last Updated:</dt>
-                                <dd class="col-sm-8" th:text="${#temporals.format(parcel.lastUpdated, 'yyyy-MM-dd HH:mm:ss')}"></dd>
                             </dl>
                         </div>
                         <div class="col-md-6">

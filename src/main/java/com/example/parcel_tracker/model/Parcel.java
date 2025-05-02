@@ -24,7 +24,7 @@ public class Parcel {
     @Enumerated(EnumType.STRING)
     private ParcelStatusEnum status;
 
-    private LocalDateTime lastUpdated;
+    private LocalDateTime creationDate;
 
     private LocalDate etaDate;
 
@@ -32,21 +32,21 @@ public class Parcel {
     private List<ParcelHistory> history = new ArrayList<>();
 
     public Parcel() {
-        this.lastUpdated = LocalDateTime.now();
+        this.creationDate = LocalDateTime.now();
     }
 
     public Parcel(String initialLocation) {
         this.trackingCode = generateTrackingCode();
         this.currentLocation = initialLocation;
         this.status = ParcelStatusEnum.PENDING;
-        this.lastUpdated = LocalDateTime.now();
+        this.creationDate = LocalDateTime.now();
     }
 
     public Parcel(String initialLocation, LocalDate etaDate) {
         this.trackingCode = generateTrackingCode();
         this.currentLocation = initialLocation;
         this.status = ParcelStatusEnum.PENDING;
-        this.lastUpdated = LocalDateTime.now();
+        this.creationDate = LocalDateTime.now();
         this.etaDate = etaDate;
     }
 
@@ -73,7 +73,6 @@ public class Parcel {
 
     public void setCurrentLocation(String currentLocation) {
         this.currentLocation = currentLocation;
-        this.lastUpdated = LocalDateTime.now();
     }
 
     public ParcelStatusEnum getStatus() {
@@ -82,15 +81,14 @@ public class Parcel {
 
     public void setStatus(ParcelStatusEnum status) {
         this.status = status;
-        this.lastUpdated = LocalDateTime.now();
     }
 
-    public LocalDateTime getLastUpdated() {
-        return lastUpdated;
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
-    public void setLastUpdated(LocalDateTime lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
     }
 
     public List<ParcelHistory> getHistory() {

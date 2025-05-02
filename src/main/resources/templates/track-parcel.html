@@ -9,6 +9,7 @@
     <div th:replace="~{fragments :: navbar}"></div>
     <div class="container mt-5">
         <h1>Track Parcel</h1>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
         <p>Enter your parcel's tracking code to view its current status and location.</p>
         <form action="/parcel/details" method="get" onsubmit="trimTrackingCode()">
             <div class="mb-3">

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface ParcelRepository extends JpaRepository<Parcel, Long> {
-    Parcel findByTrackingCode(String trackingCode);
+    Optional<Parcel> findByTrackingCode(String trackingCode);
     List<Parcel> findByStatus(ParcelStatusEnum status);
     Optional<Parcel> findById(long id);
 }

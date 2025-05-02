@@ -1,5 +1,7 @@
 package com.example.parcel_tracker.service;
 
+import com.example.parcel_tracker.exception.InvalidEtaDateException;
+import com.example.parcel_tracker.exception.ParcelNotFoundException;
 import com.example.parcel_tracker.model.Parcel;
 import com.example.parcel_tracker.model.ParcelStatusEnum;
 import com.example.parcel_tracker.repository.ParcelRepository;
@@ -24,12 +26,25 @@ public class ParcelService {
     }
 
     public Parcel getParcel(String trackingCode) {
-        return parcelRepository.findByTrackingCode(trackingCode);
+        Optional<Parcel> parcelOptional = parcelRepository.findByTrackingCode(trackingCode);
+        if (parcelOptional.isEmpty()) {
+            throw new ParcelNotFoundException(trackingCode);
+        }
+        return parcelOptional.get();
     }
 
     public Parcel updateParcel(String trackingCode, String currentLocation, ParcelStatusEnum status, String comments, LocalDate etaDate) {
-        Parcel parcel = parcelRepository.findByTrackingCode(trackingCode);
-        if (parcel != null) {
+        Optional<Parcel> parcelOptional = parcelRepository.findByTrackingCode(trackingCode);
+            if (parcelOptional.isEmpty()) {
+                throw new ParcelNotFoundException(trackingCode);
+            }
+            Parcel parcel = parcelOptional.get();
+            if(etaDate != null && etaDate.isBefore(LocalDate.now())){
+                throw new InvalidEtaDateException("Delivery date cannot be in the past!");
+            }
+            if (status == ParcelStatusEnum.IN_TRANSIT && etaDate == null) {
+                throw new InvalidEtaDateException("Estimated Delivery Date is required when the parcel is In Transit.");
+            }
             comments = (comments != null && !comments.isEmpty() ? comments : "");
             parcel.setEtaDate(etaDate);
             parcel.setCurrentLocation(currentLocation);
@@ -37,8 +52,6 @@ public class ParcelService {
             parcel.addHistoryEntry(currentLocation, status.toString(), comments);
             
             return parcelRepository.save(parcel);
-        }
-        return null;
     }
 
     public Optional<Parcel> getParcelsByID(Long id){
