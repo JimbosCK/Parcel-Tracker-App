@@ -62,7 +62,7 @@
                         </thead>
                         <tbody>
                             <tr th:each="entry : ${history}">
-                                <td th:text="${#temporals.format(entry.dateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                <td th:text="${#temporals.format(entry.timeStamp, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                 <td th:text="${entry.location}"></td>
                                 <td th:text="${entry.comments}"></td>
                                 <td th:text="${entry.status}"></td>

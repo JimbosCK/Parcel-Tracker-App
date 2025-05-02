@@ -2,7 +2,6 @@ package com.example.parcel_tracker.controller;
 
 import com.example.parcel_tracker.controller.Helpers.ParcelWebHelper;
 import com.example.parcel_tracker.exception.InvalidEtaDateException;
-import com.example.parcel_tracker.exception.ParcelNotFoundException;
 import com.example.parcel_tracker.model.Parcel;
 import com.example.parcel_tracker.model.ParcelHistory;
 import com.example.parcel_tracker.model.ParcelStatusEnum;
@@ -42,7 +41,7 @@ public class ParcelWebController {
     @PostMapping("/create")
     public String createParcel(@RequestParam String initialLocation, @RequestParam String comment, Model model) {
         Parcel parcel = parcelService.createParcel(initialLocation, comment);
-        List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
+        List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByTimeStampAsc(parcel);
         
         ParcelWebHelper.addBarcodeToModel(parcel, model);
         model.addAttribute("parcel", parcel);
@@ -59,7 +58,7 @@ public class ParcelWebController {
     public String getParcel(@RequestParam String trackingCode, Model model) {
         Parcel parcel = parcelService.getParcel(trackingCode.trim());
         if (parcel != null) {
-            List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
+            List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByTimeStampAsc(parcel);
             ParcelWebHelper.addBarcodeToModel(parcel, model);
             model.addAttribute("parcel", parcel);
             model.addAttribute("history", history);
@@ -73,7 +72,7 @@ public class ParcelWebController {
     @GetMapping("/details/{trackingCode}")
     public String showParcelDetails(@PathVariable String trackingCode, Model model) {
         Parcel parcel = parcelService.getParcel(trackingCode.trim());
-            List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByDateTimeAsc(parcel);
+            List<ParcelHistory> history = parcelHistoryRepository.findByParcelOrderByTimeStampAsc(parcel);
             ParcelWebHelper.addBarcodeToModel(parcel, model);
             model.addAttribute("parcel", parcel);
             model.addAttribute("history", history);

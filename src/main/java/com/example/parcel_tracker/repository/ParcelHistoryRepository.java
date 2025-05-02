@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ParcelHistoryRepository extends JpaRepository<ParcelHistory, Long> {
-    List<ParcelHistory> findByParcelOrderByDateTimeAsc(Parcel parcel);
+    List<ParcelHistory> findByParcelOrderByTimeStampAsc(Parcel parcel);
 }

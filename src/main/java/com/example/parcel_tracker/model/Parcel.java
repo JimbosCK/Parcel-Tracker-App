@@ -50,6 +50,21 @@ public class Parcel {
         this.etaDate = etaDate;
     }
 
+    //Methods
+    public void addHistoryEntry(String location, String status, String comments) {
+        ParcelHistory entry = new ParcelHistory(this, location, status, comments);
+        this.history.add(entry);
+    }
+
+    public void addHistoryEntry(String location, String status) {
+        ParcelHistory entry = new ParcelHistory(this, location, status);
+        this.history.add(entry);
+    }
+
+    private String generateTrackingCode() {
+        return java.util.UUID.randomUUID().toString().substring(0, 10).toUpperCase();
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -97,20 +112,6 @@ public class Parcel {
 
     public void setHistory(List<ParcelHistory> history) {
         this.history = history;
-    }
-
-    public void addHistoryEntry(String location, String status, String comments) {
-        ParcelHistory entry = new ParcelHistory(this, location, status, comments);
-        this.history.add(entry);
-    }
-
-    public void addHistoryEntry(String location, String status) {
-        ParcelHistory entry = new ParcelHistory(this, location, status);
-        this.history.add(entry);
-    }
-
-    private String generateTrackingCode() {
-        return java.util.UUID.randomUUID().toString().substring(0, 10).toUpperCase();
     }
 
     public LocalDate getEtaDate() {

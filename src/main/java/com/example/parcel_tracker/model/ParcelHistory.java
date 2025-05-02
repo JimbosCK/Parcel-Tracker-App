@@ -18,7 +18,7 @@ public class ParcelHistory {
     private Parcel parcel;
 
     @Column(nullable = false)
-    private LocalDateTime dateTime;
+    private LocalDateTime timeStamp;
 
     @Column(nullable = false)
     private String location;
@@ -29,19 +29,19 @@ public class ParcelHistory {
     private String comments;
 
     public ParcelHistory() {
-        this.dateTime = LocalDateTime.now();
+        this.timeStamp = LocalDateTime.now();
     }
 
     public ParcelHistory(Parcel parcel, String location, String status) {
         this.parcel = parcel;
-        this.dateTime = LocalDateTime.now();
+        this.timeStamp = LocalDateTime.now();
         this.location = location;
         this.status = status;
     }
 
     public ParcelHistory(Parcel parcel, String location, String status, String comments) {
         this.parcel = parcel;
-        this.dateTime = LocalDateTime.now();
+        this.timeStamp = LocalDateTime.now();
         this.location = location;
         this.status = status;
         this.comments = comments;
@@ -64,12 +64,12 @@ public class ParcelHistory {
         this.parcel = parcel;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDateTime getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setTimeStamp(LocalDateTime timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public String getLocation() {
