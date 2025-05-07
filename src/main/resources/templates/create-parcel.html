@@ -9,14 +9,73 @@
     <div th:replace="~{fragments :: navbar}"></div>
     <div class="container mt-5">
         <h1>Create New Parcel</h1>
-        <p>Enter the initial location of your parcel to generate a unique tracking code.</p>
-        <form action="/parcel/create" method="post">
-            <div class="mb-3">
-                <label for="initialLocation" class="form-label">Initial Location:</label>
-                <input type="text" id="initialLocation" name="initialLocation" class="form-control" required>
-                <label for="initialLocation" class="form-label">Comment:</label>
-                <input type="text" id="comment" name="comment" class="form-control">
+        <p>Please enter the parcel details and the recipient's shipping address.</p>
+        <form th:action="@{/parcel/create}" method="post" th:object="${parcelCreationView}">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="currentLocation" class="form-label">Initial Location:</label>
+                    <input type="text" id="currentLocation" th:field="*{currentLocation}" class="form-control" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('currentLocation')}" th:errors="*{currentLocation}"></div>
+                </div>
+                <div class="col-md-6">
+                    </div>
             </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="comments" class="form-label">Comment (Optional):</label>
+                    <input type="text" id="comments" th:field="*{comments}" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    </div>
+            </div>
+
+            <h2 class="mt-4">Shipping Address</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="recipientName" class="form-label">Recipient Name:</label>
+                        <input type="text" id="recipientName" th:field="*{recipientName}" class="form-control" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('recipientName')}" th:errors="*{recipientName}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipientPhone" class="form-label">Phone Number:</label>
+                        <input type="text" id="recipientPhone" th:field="*{recipientPhone}" class="form-control" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('recipientPhone')}" th:errors="*{recipientPhone}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipientEmail" class="form-label">Email:</label>
+                        <input type="email" id="recipientEmail" th:field="*{recipientEmail}" class="form-control">
+                        <div class="text-danger" th:if="${#fields.hasErrors('recipientEmail')}" th:errors="*{recipientEmail}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipientNotes" class="form-label">Delivery Notes (Optional):</label>
+                        <input type="text" id="recipientNotes" th:field="*{recipientNotes}" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="recipientStreet" class="form-label">Street Address:</label>
+                        <input type="text" id="recipientStreet" th:field="*{recipientStreet}" class="form-control" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('recipientStreet')}" th:errors="*{recipientStreet}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipientCity" class="form-label">City:</label>
+                        <input type="text" id="recipientCity" th:field="*{recipientCity}" class="form-control" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('recipientCity')}" th:errors="*{recipientCity}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipientZipCode" class="form-label">Zip Code:</label>
+                        <input type="text" id="recipientZipCode" th:field="*{recipientZipCode}" class="form-control" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('recipientZipCode')}" th:errors="*{recipientZipCode}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipientCountry" class="form-label">Country:</label>
+                        <input type="text" id="recipientCountry" th:field="*{recipientCountry}" class="form-control" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('recipientCountry')}" th:errors="*{recipientCountry}"></div>
+                    </div>
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-primary">Create Parcel</button>
         </form>
     </div>

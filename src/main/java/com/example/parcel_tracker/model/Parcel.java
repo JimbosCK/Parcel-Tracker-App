@@ -31,6 +31,10 @@ public class Parcel {
     @OneToMany(mappedBy = "parcel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParcelHistory> history = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "shipping_address_id")
+    private ShippingAddress shippingAddress;
+
     public Parcel() {
         this.creationDate = LocalDateTime.now();
     }
@@ -42,12 +46,21 @@ public class Parcel {
         this.creationDate = LocalDateTime.now();
     }
 
-    public Parcel(String initialLocation, LocalDate etaDate) {
+    public Parcel(String initialLocation, ShippingAddress shippingAddress) {
+        this.trackingCode = generateTrackingCode();
+        this.currentLocation = initialLocation;
+        this.status = ParcelStatusEnum.PENDING;
+        this.creationDate = LocalDateTime.now();
+        this.shippingAddress = shippingAddress;
+    }
+
+    public Parcel(String initialLocation, LocalDate etaDate, ShippingAddress shippingAddress) {
         this.trackingCode = generateTrackingCode();
         this.currentLocation = initialLocation;
         this.status = ParcelStatusEnum.PENDING;
         this.creationDate = LocalDateTime.now();
         this.etaDate = etaDate;
+        this.shippingAddress = shippingAddress;
     }
 
     //Methods
@@ -121,4 +134,13 @@ public class Parcel {
     public void setEtaDate(LocalDate etaDate) {
         this.etaDate = etaDate;
     }
+
+    public ShippingAddress getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(ShippingAddress shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+    
 }

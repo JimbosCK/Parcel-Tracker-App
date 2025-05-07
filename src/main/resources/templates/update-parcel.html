@@ -1,78 +1,111 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Parcel Tracker - Parcel Update</title>
+    <title>Parcel Tracker - Update Parcel</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/css/custom.css}"/>
-    <style>
-        .history-table th, .history-table td {
-            color: white;
-        }
-    </style>
 </head>
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
-
     <div class="container mt-5">
-        <h1>Parcel Update</h1>
-        <div th:if="${parcel}" class="card mb-3">
+        <h1>Update Parcel</h1>
+        <p>Update the details for parcel with tracking code: <strong th:text="${parcel.trackingCode}"></strong></p>
+
+        <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Tracking Information</h5>
+                <h5 class="card-title">Parcel Information</h5>
                 <dl class="row">
-                    <dt class="col-sm-3">Tracking Code:</dt>
-                    <dd class="col-sm-9" th:text="${parcel.trackingCode}"></dd>
+                    <dt class="col-sm-4">Tracking Code:</dt>
+                    <dd class="col-sm-8" th:text="${parcel.trackingCode}"></dd>
 
-                    <dt class="col-sm-3">Creation Date:</dt>
-                    <dd class="col-sm-9" th:text="${#temporals.format(parcel.creationDate, 'yyyy-MM-dd HH:mm:ss')}"></dd>
-
+                    <dt class="col-sm-4">Creation Date:</dt>
+                    <dd class="col-sm-8" th:text="${#temporals.format(parcel.creationDate, 'yyyy-MM-dd HH:mm:ss')}"></dd>
                 </dl>
             </div>
         </div>
 
-        <form th:action="@{/parcel/update/{trackingCode}(trackingCode=${parcel.trackingCode})}" method="post">
-            <input type="hidden" name="_method" value="post" />
-            <div class="mb-3">
-                <label for="currentLocation" class="form-label">New Location:</label>
-                <input type="text" id="currentLocation" name="currentLocation" class="form-control" th:value="${parcel.currentLocation}" required>
+        <div th:if="${updateRequest.shippingAddress}">
+            <h2 class="mt-4">Delivery Address</h2>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Recipient Name:</dt>
+                                <dd class="col-sm-8" th:text="${updateRequest.shippingAddress.name}"></dd>
+
+                                <dt class="col-sm-4">Phone Number:</dt>
+                                <dd class="col-sm-8" th:text="${updateRequest.shippingAddress.phone}"></dd>
+
+                                <dt class="col-sm-4">Email:</dt>
+                                <dd class="col-sm-8" th:text="${updateRequest.shippingAddress.email}"></dd>
+
+                                <dt class="col-sm-4">Delivery Notes:</dt>
+                                <dd class="col-sm-8" th:text="${updateRequest.shippingAddress.notes} ?: 'N/A'"></dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Street Address:</dt>
+                                <dd class="col-sm-8" th:text="${updateRequest.shippingAddress.street}"></dd>
+
+                                <dt class="col-sm-4">City:</dt>
+                                <dd class="col-sm-8" th:text="${updateRequest.shippingAddress.city}"></dd>
+
+                                <dt class="col-sm-4">Zip Code:</dt>
+                                <dd class="col-sm-8" th:text="${updateRequest.shippingAddress.zipCode}"></dd>
+
+                                <dt class="col-sm-4">Country:</dt>
+                                <dd class="col-sm-8" th:text="${updateRequest.shippingAddress.country}"></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="status" class="form-label">New Status:</label>
-                <select class="form-select" id="status" name="status" required onchange="toggleEtaRequired()">
-                    <option th:each="statusOption : ${T(com.example.parcel_tracker.model.ParcelStatusEnum).values()}"
-                            th:value="${statusOption}"
-                            th:text="${statusOption}"
-                            th:selected="${statusOption == parcel.status}">
-                    </option>
-                </select>
+        </div>
+
+        <form th:action="@{/parcel/update/{trackingCode}(trackingCode=${parcel.trackingCode})}" method="post" th:object="${updateRequest}">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Update Parcel Details</h5>
+                    <div class="mb-3">
+                        <label for="currentLocation" class="form-label">Current Location:</label>
+                        <input type="text" id="currentLocation" th:field="*{currentLocation}" class="form-control" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('currentLocation')}" th:errors="*{currentLocation}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status:</label>
+                        <select class="form-select" id="status" th:field="*{status}" onchange="toggleEtaRequired()">
+                            <option value="">Select Status</option>
+                            <option th:each="statusOption : ${statuses}"
+                                    th:value="${statusOption}"
+                                    th:text="${statusOption}"
+                                    th:selected="${statusOption.name() == parcel.status.name()}"></option>
+                        </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comments" class="form-label">Comment (Optional):</label>
+                        <input type="text" id="comments" th:field="*{comments}" class="form-control">
+                        <div class="text-danger" th:if="${etaError}" th:text="${etaError}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="etaDate" class="form-label">Estimated Date of Arrival (Optional):</label>
+                        <input type="date" id="etaDate" th:field="*{etaDate}" class="form-control">
+                        <div class="text-danger" th:if="${#fields.hasErrors('etaDate')}" th:errors="*{etaDate}"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Parcel</button>
+                    <a th:href="@{/parcel/details/{trackingCode}(trackingCode=${parcel.trackingCode})}" class="btn btn-secondary ms-2">Cancel</a>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="comments" class="form-label">Comment (Optional):</label>
-                <input type="text" id="comments" name="comments" class="form-control"
-                    th:value="${comments}">
-            </div>
-            <div class="mb-3">
-                <label for="etaDate" class="form-label">Estimated Date of Arrival:</label>
-                <input type="date" id="etaDate" name="etaDate" class="form-control" th:value="${parcel.etaDate}">
-                <div th:if="${etaError}" class="alert alert-danger mt-2" th:text="${etaError.defaultMessage}"></div>
-            </div>
-            <button type="submit" class="btn btn-primary">Update Parcel</button>
         </form>
-
-        <div th:if="${parcel}" class="mt-3">
-            <a href="/parcel/" class="btn btn-secondary">Cancel</a>
-        </div>
-
-        <div th:unless="${parcel}" class="alert alert-warning">
-            Parcel not found.
-        </div>
     </div>
     <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
-</body>
-<script>
-    var today = new Date().toISOString().split("T")[0];
-    document.getElementById("etaDate").setAttribute("min", today);
+    <script>
+        var today = new Date().toISOString().split("T")[0];
+        document.getElementById("etaDate").setAttribute("min", today);
 
-    function toggleEtaRequired() {
+        function toggleEtaRequired() {
             const statusDropdown = document.getElementById('status');
             const etaDateInput = document.getElementById('etaDate');
 
@@ -84,5 +117,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', toggleEtaRequired);
-</script>
+    </script>
+</body>
 </html>

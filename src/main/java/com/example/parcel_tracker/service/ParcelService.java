@@ -4,7 +4,11 @@ import com.example.parcel_tracker.exception.InvalidEtaDateException;
 import com.example.parcel_tracker.exception.ParcelNotFoundException;
 import com.example.parcel_tracker.model.Parcel;
 import com.example.parcel_tracker.model.ParcelStatusEnum;
+import com.example.parcel_tracker.model.ShippingAddress;
 import com.example.parcel_tracker.repository.ParcelRepository;
+import com.example.parcel_tracker.repository.ShippingAddressRepository;
+import com.example.parcel_tracker.views.ParcelUpdateView;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +23,18 @@ public class ParcelService {
     @Autowired
     private ParcelRepository parcelRepository;
 
+    @Autowired
+    private ShippingAddressRepository shippingAddressRepository;
+
     public Parcel createParcel(String initialLocation, String comment) {
         Parcel parcel = new Parcel(initialLocation);
+        parcel.addHistoryEntry(initialLocation, parcel.getStatus().toString(), comment);
+        return parcelRepository.save(parcel);
+    }
+
+    public Parcel createParcel(String initialLocation, String comment, ShippingAddress shippingAddress) {
+        shippingAddressRepository.save(shippingAddress);
+        Parcel parcel = new Parcel(initialLocation, shippingAddress);
         parcel.addHistoryEntry(initialLocation, parcel.getStatus().toString(), comment);
         return parcelRepository.save(parcel);
     }
@@ -33,23 +47,24 @@ public class ParcelService {
         return parcelOptional.get();
     }
 
-    public Parcel updateParcel(String trackingCode, String currentLocation, ParcelStatusEnum status, String comments, LocalDate etaDate) {
+    public Parcel updateParcel(String trackingCode, ParcelUpdateView updateRequest) {
         Optional<Parcel> parcelOptional = parcelRepository.findByTrackingCode(trackingCode);
-            if (parcelOptional.isEmpty()) {
-                throw new ParcelNotFoundException(trackingCode);
-            }
-            Parcel parcel = parcelOptional.get();
-            if(etaDate != null && etaDate.isBefore(LocalDate.now())){
-                throw new InvalidEtaDateException("Delivery date cannot be in the past!");
-            }
-            if (status == ParcelStatusEnum.IN_TRANSIT && etaDate == null) {
-                throw new InvalidEtaDateException("Estimated Delivery Date is required when the parcel is In Transit.");
-            }
-            comments = (comments != null && !comments.isEmpty() ? comments : "");
-            parcel.setEtaDate(etaDate);
-            parcel.setCurrentLocation(currentLocation);
-            parcel.setStatus(status);
-            parcel.addHistoryEntry(currentLocation, status.toString(), comments);
+        if (parcelOptional.isEmpty()) {
+            throw new ParcelNotFoundException(trackingCode);
+        }
+        Parcel parcel = parcelOptional.get();
+        if(updateRequest.getEtaDate() != null && updateRequest.getEtaDate().isBefore(LocalDate.now())){
+            throw new InvalidEtaDateException("Delivery date cannot be in the past!");
+        }
+        if (updateRequest.getStatus() == ParcelStatusEnum.IN_TRANSIT && updateRequest.getEtaDate() == null) {
+            throw new InvalidEtaDateException("Estimated Delivery Date is required when the parcel is In Transit.");
+        }
+        updateRequest.setComments( (updateRequest.getComments() != null && !updateRequest.getComments().isEmpty() ? updateRequest.getComments() : ""));
+        
+        parcel.setEtaDate(updateRequest.getEtaDate());
+            parcel.setCurrentLocation(updateRequest.getCurrentLocation());
+            parcel.setStatus(updateRequest.getStatus());
+            parcel.addHistoryEntry(updateRequest.getCurrentLocation(), updateRequest.getStatus().toString(), updateRequest.getComments());
             
             return parcelRepository.save(parcel);
     }
@@ -65,5 +80,7 @@ public class ParcelService {
     public List<Parcel> getAllParcels() {
         return parcelRepository.findAll();
     }
+
+
 
 }
