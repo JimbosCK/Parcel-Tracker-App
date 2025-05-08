@@ -1,6 +1,7 @@
 # Parcel Tracker
 
 A simple web application for creating and tracking parcels.
+This project is intended as a learning exercise and to gain familiarity with Java/Spring Boot and Kafka technologies.
 
 ## Overview
 
@@ -10,15 +11,13 @@ Parcel Tracker is a web-based application built using the Java Spring Boot frame
 * **Track Parcels:** View the current location and status of parcels using their tracking codes.
 * **Barcodes:** Generating barcodes for tracking codes.
 
-This project is intended as a learning exercise and to gain familiarity with Java/Spring Boot technologies.
-
 ## Technologies Used
 
 * **Backend:** Java, Spring Boot
 * **Templating Engine:** Thymeleaf
 * **Frontend:** HTML, CSS, Bootstrap
 * **Build Tool:** Gradle
-* **Database:** H2 (in-memory for development)
+* **Database:** PostgreSQL
 
 ## Getting Started
 
@@ -27,6 +26,7 @@ To run the application locally, follow these steps:
 1.  **Prerequisites:**
     * Java Development Kit (JDK) 17 or higher
     * Gradle 7.0 or higher
+    * PostgreSQL installed and running
 
 2.  **Clone the Repository:**
     ```bash
@@ -34,20 +34,33 @@ To run the application locally, follow these steps:
     cd parcel-tracker-app
     ```
 
-3.  **Build the Application:**
+3.  **Configure Database Environment Variables:**
+    You can configure the PostgreSQL database connection details by setting environment variables. This can be done in a few ways:
+    
+     ```json
+     "env": {
+         "DATABASE_URL": "jdbc:postgresql://localhost:5432/your_database_name",
+         "DATABASE_USERNAME": "your_username",
+         "DATABASE_PASSWORD": "your_password"
+     }
+     ```
+
+     **Note:** Replace `your_database_name`, `your_username`, and `your_password` with your actual PostgreSQL credentials.
+
+4.  **Build the Application:**
     ```bash
-    .\gradlew.bat build  
+    .\gradlew.bat build
     ```
 
-4.  **Run the Application:**
+5.  **Run the Application:**
     ```bash
-    .\gradlew.bat bootrun
+    .\gradlew.bat bootRun
     ```
 
-5.  **Access the Application:**
+6.  **Access the Application:**
     Open your web browser and navigate to `http://localhost:8080`.
 
-## Features
+    ## Features
 
 * Create new parcel entries.
 * Track existing parcels using their tracking code.
@@ -59,12 +72,4 @@ To run the application locally, follow these steps:
 ## Future Enhancements
 
 * Add user roles and authorization.
-* Allow logged-in users to manage their created parcels.
-* Integrate with a real-world mapping service.
-* More detailed parcel status updates.
-
-## Author
-
-[Dimitris C. Karakasis/JimbosCK]
-
----
+* Real-time Parcel Status Updates using Kafka.
