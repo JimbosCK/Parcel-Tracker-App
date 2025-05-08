@@ -1,12 +1,14 @@
 package com.example.parcel_tracker.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 public class Parcel {
 
@@ -76,71 +78,6 @@ public class Parcel {
 
     private String generateTrackingCode() {
         return java.util.UUID.randomUUID().toString().substring(0, 10).toUpperCase();
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTrackingCode() {
-        return trackingCode;
-    }
-
-    public void setTrackingCode(String trackingCode) {
-        this.trackingCode = trackingCode;
-    }
-
-    public String getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public void setCurrentLocation(String currentLocation) {
-        this.currentLocation = currentLocation;
-    }
-
-    public ParcelStatusEnum getStatus() {
-        return status;
-    }
-
-    public void setStatus(ParcelStatusEnum status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public List<ParcelHistory> getHistory() {
-        return history;
-    }
-
-    public void setHistory(List<ParcelHistory> history) {
-        this.history = history;
-    }
-
-    public LocalDate getEtaDate() {
-        return etaDate;
-    }
-
-    public void setEtaDate(LocalDate etaDate) {
-        this.etaDate = etaDate;
-    }
-
-    public ShippingAddress getShippingAddress() {
-        return shippingAddress;
-    }
-
-    public void setShippingAddress(ShippingAddress shippingAddress) {
-        this.shippingAddress = shippingAddress;
     }
     
 }
