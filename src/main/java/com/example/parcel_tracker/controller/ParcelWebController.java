@@ -47,25 +47,25 @@ public class ParcelWebController {
     }
 
     @PostMapping("/create")
-    public String createNewParcel(@Valid @ModelAttribute ParcelCreationView request, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String createNewParcel(@Valid @ModelAttribute ParcelCreationView parcelCreationView, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "create-parcel.html";
         }
 
         ShippingAddress shippingAddress = new ShippingAddress(
-                request.getRecipientName(),
-                request.getRecipientPhone(),
-                request.getRecipientEmail(),
-                request.getRecipientNotes(),
-                request.getRecipientStreet(),
-                request.getRecipientCity(),
-                request.getRecipientZipCode(),
-                request.getRecipientCountry()
+            parcelCreationView.getRecipientName(),
+            parcelCreationView.getRecipientPhone(),
+            parcelCreationView.getRecipientEmail(),
+            parcelCreationView.getRecipientNotes(),
+            parcelCreationView.getRecipientStreet(),
+            parcelCreationView.getRecipientCity(),
+            parcelCreationView.getRecipientZipCode(),
+            parcelCreationView.getRecipientCountry()
         );
 
         Parcel parcel = parcelService.createParcel(
-                request.getCurrentLocation(),
-                request.getComments(),
+            parcelCreationView.getCurrentLocation(),
+            parcelCreationView.getComments(),
                 shippingAddress
         );
 
@@ -115,7 +115,7 @@ public class ParcelWebController {
             updateView.setCurrentLocation(parcel.getCurrentLocation());
             updateView.setStatus(parcel.getStatus());
             updateView.setEtaDate(parcel.getEtaDate());
-            updateView.setShippingAddress(parcel.getShippingAddress()); // Populate shipping address
+            updateView.setShippingAddress(parcel.getShippingAddress());
             model.addAttribute("updateRequest", updateView);
         }
         model.addAttribute("statuses", ParcelStatusEnum.values());
@@ -123,21 +123,21 @@ public class ParcelWebController {
     }
 
     @PostMapping("/update/{trackingCode}")
-    public String updateParcel(@PathVariable String trackingCode, @ModelAttribute ParcelUpdateView updateRequest, RedirectAttributes redirectAttributes) {
+    public String updateParcel(@PathVariable String trackingCode, @ModelAttribute ParcelUpdateView parcelUpdateView, RedirectAttributes redirectAttributes) {
         try {
-            parcelService.updateParcel(trackingCode, updateRequest);
+            parcelService.updateParcel(trackingCode, parcelUpdateView);
             return "redirect:/parcel/details/" + trackingCode;
         } catch (InvalidEtaDateException e) {
             redirectAttributes.addFlashAttribute("etaError", new FieldError(
                     "parcel", "etaDate", e.getMessage()
             ));
 
-            redirectAttributes.addFlashAttribute("comments", updateRequest.getComments());
+            redirectAttributes.addFlashAttribute("comments", parcelUpdateView.getComments());
 
             Parcel viewParcel = parcelService.getParcel(trackingCode);
-            viewParcel.setCurrentLocation(updateRequest.getCurrentLocation());
-            viewParcel.setStatus(updateRequest.getStatus());
-            viewParcel.setEtaDate(updateRequest.getEtaDate());
+            viewParcel.setCurrentLocation(parcelUpdateView.getCurrentLocation());
+            viewParcel.setStatus(parcelUpdateView.getStatus());
+            viewParcel.setEtaDate(parcelUpdateView.getEtaDate());
             redirectAttributes.addFlashAttribute("parcel", viewParcel);
 
             return "redirect:/parcel/update/" + trackingCode;
