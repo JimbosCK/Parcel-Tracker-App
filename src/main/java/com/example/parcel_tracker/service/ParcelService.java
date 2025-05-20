@@ -7,9 +7,9 @@ import com.example.parcel_tracker.model.ParcelStatusEnum;
 import com.example.parcel_tracker.model.ShippingAddress;
 import com.example.parcel_tracker.repository.ParcelRepository;
 import com.example.parcel_tracker.repository.ShippingAddressRepository;
+import com.example.parcel_tracker.service.helpers.ParcelKafkaHelper;
 import com.example.parcel_tracker.views.ParcelUpdateView;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,23 +20,31 @@ import java.util.Optional;
 @Service
 public class ParcelService {
 
-    @Autowired
-    private ParcelRepository parcelRepository;
+    private final ParcelRepository parcelRepository;
+    private final ShippingAddressRepository shippingAddressRepository;
+    private final ParcelKafkaHelper parcelKafkaHelper;
 
-    @Autowired
-    private ShippingAddressRepository shippingAddressRepository;
+    public ParcelService(ParcelRepository parcelRepository, ShippingAddressRepository shippingAddressRepository, ParcelKafkaHelper parcelKafkaHelper) {
+        this.parcelRepository = parcelRepository;
+        this.shippingAddressRepository = shippingAddressRepository;
+        this.parcelKafkaHelper = parcelKafkaHelper;
+    }
 
     public Parcel createParcel(String initialLocation, String comment) {
         Parcel parcel = new Parcel(initialLocation);
         parcel.addHistoryEntry(initialLocation, parcel.getStatus().toString(), comment);
-        return parcelRepository.save(parcel);
+        Parcel savedParcel = parcelRepository.save(parcel);
+        parcelKafkaHelper.sendParcelEvent(savedParcel, "CREATED");
+        return savedParcel;
     }
 
     public Parcel createParcel(String initialLocation, String comment, ShippingAddress shippingAddress) {
         shippingAddressRepository.save(shippingAddress);
         Parcel parcel = new Parcel(initialLocation, shippingAddress);
         parcel.addHistoryEntry(initialLocation, parcel.getStatus().toString(), comment);
-        return parcelRepository.save(parcel);
+        Parcel savedParcel = parcelRepository.save(parcel);
+        parcelKafkaHelper.sendParcelEvent(savedParcel, "CREATED");
+        return savedParcel;
     }
 
     public Parcel getParcel(String trackingCode) {
@@ -62,11 +70,13 @@ public class ParcelService {
         updateRequest.setComments( (updateRequest.getComments() != null && !updateRequest.getComments().isEmpty() ? updateRequest.getComments() : ""));
         
         parcel.setEtaDate(updateRequest.getEtaDate());
-            parcel.setCurrentLocation(updateRequest.getCurrentLocation());
-            parcel.setStatus(updateRequest.getStatus());
-            parcel.addHistoryEntry(updateRequest.getCurrentLocation(), updateRequest.getStatus().toString(), updateRequest.getComments());
-            
-            return parcelRepository.save(parcel);
+        parcel.setCurrentLocation(updateRequest.getCurrentLocation());
+        parcel.setStatus(updateRequest.getStatus());
+        parcel.addHistoryEntry(updateRequest.getCurrentLocation(), updateRequest.getStatus().toString(), updateRequest.getComments());
+        
+        Parcel updatedParcel = parcelRepository.save(parcel);
+        parcelKafkaHelper.sendParcelEvent(updatedParcel, "UPDATED");
+        return updatedParcel;
     }
 
     public Optional<Parcel> getParcelsByID(Long id){
