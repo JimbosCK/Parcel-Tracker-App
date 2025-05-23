@@ -15,28 +15,34 @@ import java.io.IOException;
 public class ParcelUpdateConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(ParcelUpdateConsumer.class);
-    private static final String PARCEL_UPDATES_TOPIC = "parcel-updates";
 
     @Autowired
     private DeliveryNotificationService deliveryNotificationService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper(); 
 
-    @KafkaListener(topics = PARCEL_UPDATES_TOPIC, groupId = "delivery-notifier-group")
+    @KafkaListener(
+        topics = "parcel-updates", 
+        groupId = "delivery-notifier-group",
+        containerFactory = "stringMessageKafkaListenerContainerFactory" 
+    )
     public void listenParcelUpdates(String message) {
         try {
+            logger.warn("Received raw message from parcel-updates: {}", message); 
             JsonNode root = objectMapper.readTree(message);
             String trackingCode = root.path("trackingCode").asText();
             String newStatus = root.path("status").asText();
-            String eventType = root.path("eventType").asText();
+            String eventType = root.path("eventType").asText(); 
 
-            logger.warn("Received Type={}: Tracking Code={}, New Status={}",eventType, trackingCode, newStatus);
+            logger.warn("Received Type={}: Tracking Code={}, New Status={}", eventType, trackingCode, newStatus);
 
             if ("DELIVERED".equalsIgnoreCase(newStatus)) {
                 deliveryNotificationService.sendDeliveryNotification(trackingCode);
             }
         } catch (IOException e) {
             logger.error("Error processing Kafka message: {}", message, e);
+        } catch (Exception e) { 
+            logger.error("An unexpected error occurred while processing Kafka message: {}", message, e);
         }
     }
 }

@@ -7,6 +7,7 @@ import com.example.parcel_tracker.model.ParcelHistory;
 import com.example.parcel_tracker.model.ParcelStatusEnum;
 import com.example.parcel_tracker.model.ShippingAddress;
 import com.example.parcel_tracker.service.ParcelService;
+import com.example.parcel_tracker.service.ParcelStatsAggregator;
 import com.example.parcel_tracker.views.ParcelCreationView;
 import com.example.parcel_tracker.views.ParcelUpdateView;
 
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -33,6 +35,10 @@ public class ParcelWebController {
 
     @Autowired
     private ParcelHistoryRepository parcelHistoryRepository; 
+
+    @Autowired
+    private ParcelStatsAggregator parcelStatsAggregator;
+
 
     @GetMapping("/")
     public String showIndexPage() {
@@ -142,6 +148,13 @@ public class ParcelWebController {
 
             return "redirect:/parcel/update/" + trackingCode;
         }
+    }
+
+    @GetMapping("/controlpanel")
+    public String controlPanel(Model model) {
+        Map<String, Integer> initialStats = parcelStatsAggregator.getCurrentStats();
+        model.addAttribute("initialStats", initialStats);
+        return "control-panel";
     }
     
 

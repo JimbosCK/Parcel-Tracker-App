@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Control Panel</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+    <link rel="stylesheet" th:href="@{/css/control-panel-styles.css}">
+</head>
+<body>
+    <div th:replace="~{fragments :: navbar}"></div>
+    <div class="container" style="margin-top: 1em;">
+        <h1>Control Panel</h1>
+        <div id="connection-status">Connecting to Live Updates...</div>
+
+        <div class="status-grid">
+            <div class="status-card PENDING">
+                <h2>Pending</h2>
+                <p id="pendingCount" th:text="${initialStats['PENDING'] != null ? initialStats['PENDING'] : 0}">0</p>
+            </div>
+            <div class="status-card IN_TRANSIT">
+                <h2>In Transit</h2>
+                <p id="inTransitCount" th:text="${initialStats['IN_TRANSIT'] != null ? initialStats['IN_TRANSIT'] : 0}">0</p>
+            </div>
+            <div class="status-card DELIVERED">
+                <h2>Delivered</h2>
+                <p id="deliveredCount" th:text="${initialStats['DELIVERED'] != null ? initialStats['DELIVERED'] : 0}">0</p>
+            </div>
+            <div class="status-card RETURNED">
+                <h2>Returned</h2>
+                <p id="returnedCount" th:text="${initialStats['RETURNED'] != null ? initialStats['RETURNED'] : 0}">0</p>
+            </div>
+        </div>
+    </div>
+
+<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+<script th:inline="javascript">
+    var stompClient = null;
+    var connectionStatusDiv = document.getElementById('connection-status');
+    var isReloading = false;
+
+    function setConnected(connected) {
+        if (connected) {
+            connectionStatusDiv.textContent = 'Connected to Live Updates';
+            connectionStatusDiv.className = 'connected';
+        } else {
+            connectionStatusDiv.textContent = 'Disconnected. Reconnecting...';
+            connectionStatusDiv.className = 'disconnected';
+        }
+    }
+
+    function showParcelStats(stats) {
+        console.log("Updating UI with stats: ", stats);
+        document.getElementById('pendingCount').innerText = stats.PENDING !== undefined ? stats.PENDING : 0;
+        document.getElementById('inTransitCount').innerText = stats.IN_TRANSIT !== undefined ? stats.IN_TRANSIT : 0;
+        document.getElementById('deliveredCount').innerText = stats.DELIVERED !== undefined ? stats.DELIVERED : 0;
+        document.getElementById('returnedCount').innerText = stats.RETURNED !== undefined ? stats.RETURNED : 0;
+    }
+
+    function handleDisconnect() {
+        if (!isReloading) { 
+            isReloading = true; 
+            console.log("WebSocket disconnected. Reloading page to resynchronize...");
+            setConnected(false);
+            setTimeout(function() {
+                location.reload();
+            }, 3000);
+        }
+    }
+
+    function connectWebSocket() {
+        if (stompClient && stompClient.connected) {
+            return;
+        }
+
+        setConnected(false);
+        var socket = new SockJS('/ws-stomp');
+        stompClient = Stomp.over(socket);
+        
+        stompClient.ws.onclose = function(event) {
+            console.log('Underlying WebSocket closed:', event);
+            if (!stompClient.connected) {
+                handleDisconnect();
+            }
+        };
+
+        stompClient.connect({}, function (frame) {
+            console.log('WebSocket Connected: ' + frame);
+            setConnected(true);
+            isReloading = false;
+
+            stompClient.subscribe('/topic/parcel-stats', function (message) {
+                showParcelStats(JSON.parse(message.body));
+            });
+        }, function(error) {
+            console.error('STOMP connection error during connect attempt: ', error);
+            handleDisconnect(); 
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+            console.log("Disconnected from WebSocket.");
+        }
+        setConnected(false);
+        isReloading = false;
+    }
+    
+    window.onload = connectWebSocket;
+    window.onbeforeunload = disconnect; 
+</script>
+
+</body>
+</html>

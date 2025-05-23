@@ -1,18 +1,20 @@
 package com.example.parcel_tracker.service;
 
+import com.example.parcel_tracker.event.ParcelStatusChangeEvent;
 import com.example.parcel_tracker.exception.InvalidEtaDateException;
 import com.example.parcel_tracker.exception.ParcelNotFoundException;
+import com.example.parcel_tracker.kafka.producer.ParcelEventProducer;
 import com.example.parcel_tracker.model.Parcel;
 import com.example.parcel_tracker.model.ParcelStatusEnum;
 import com.example.parcel_tracker.model.ShippingAddress;
 import com.example.parcel_tracker.repository.ParcelRepository;
 import com.example.parcel_tracker.repository.ShippingAddressRepository;
-import com.example.parcel_tracker.service.helpers.ParcelKafkaHelper;
 import com.example.parcel_tracker.views.ParcelUpdateView;
 
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,19 +24,29 @@ public class ParcelService {
 
     private final ParcelRepository parcelRepository;
     private final ShippingAddressRepository shippingAddressRepository;
-    private final ParcelKafkaHelper parcelKafkaHelper;
+    private final ParcelEventProducer parcelEventProducer; 
 
-    public ParcelService(ParcelRepository parcelRepository, ShippingAddressRepository shippingAddressRepository, ParcelKafkaHelper parcelKafkaHelper) {
+    public ParcelService(ParcelRepository parcelRepository, ShippingAddressRepository shippingAddressRepository, ParcelEventProducer parcelEventProducer) {
         this.parcelRepository = parcelRepository;
         this.shippingAddressRepository = shippingAddressRepository;
-        this.parcelKafkaHelper = parcelKafkaHelper;
+        this.parcelEventProducer = parcelEventProducer;
     }
+
 
     public Parcel createParcel(String initialLocation, String comment) {
         Parcel parcel = new Parcel(initialLocation);
         parcel.addHistoryEntry(initialLocation, parcel.getStatus().toString(), comment);
         Parcel savedParcel = parcelRepository.save(parcel);
-        parcelKafkaHelper.sendParcelEvent(savedParcel, "CREATED");
+        parcelEventProducer.sendParcelStatusChangeEvent(new ParcelStatusChangeEvent(
+            savedParcel.getId(),
+            savedParcel.getTrackingCode(),
+            null,
+            savedParcel.getStatus(),
+            LocalDateTime.now()
+        ));
+
+        parcelEventProducer.sendGenericParcelEvent(savedParcel, "CREATED");
+        
         return savedParcel;
     }
 
@@ -43,7 +55,15 @@ public class ParcelService {
         Parcel parcel = new Parcel(initialLocation, shippingAddress);
         parcel.addHistoryEntry(initialLocation, parcel.getStatus().toString(), comment);
         Parcel savedParcel = parcelRepository.save(parcel);
-        parcelKafkaHelper.sendParcelEvent(savedParcel, "CREATED");
+        parcelEventProducer.sendParcelStatusChangeEvent(new ParcelStatusChangeEvent(
+            savedParcel.getId(),
+            savedParcel.getTrackingCode(),
+            null,
+            savedParcel.getStatus(),
+            LocalDateTime.now()
+        ));        
+        parcelEventProducer.sendGenericParcelEvent(savedParcel, "CREATED");
+
         return savedParcel;
     }
 
@@ -61,6 +81,9 @@ public class ParcelService {
             throw new ParcelNotFoundException(trackingCode);
         }
         Parcel parcel = parcelOptional.get();
+
+        ParcelStatusEnum oldStatus = parcel.getStatus();
+
         if(updateRequest.getEtaDate() != null && updateRequest.getEtaDate().isBefore(LocalDate.now())){
             throw new InvalidEtaDateException("Delivery date cannot be in the past!");
         }
@@ -75,7 +98,19 @@ public class ParcelService {
         parcel.addHistoryEntry(updateRequest.getCurrentLocation(), updateRequest.getStatus().toString(), updateRequest.getComments());
         
         Parcel updatedParcel = parcelRepository.save(parcel);
-        parcelKafkaHelper.sendParcelEvent(updatedParcel, "UPDATED");
+
+        if (!oldStatus.equals(updatedParcel.getStatus())) {
+            parcelEventProducer.sendParcelStatusChangeEvent(new ParcelStatusChangeEvent(
+                updatedParcel.getId(),
+                updatedParcel.getTrackingCode(),
+                oldStatus,
+                updatedParcel.getStatus(),
+                LocalDateTime.now()
+            ));
+        }
+
+        parcelEventProducer.sendGenericParcelEvent(updatedParcel, "UPDATED");
+
         return updatedParcel;
     }
 

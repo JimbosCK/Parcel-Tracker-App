@@ -4,6 +4,7 @@ import com.example.parcel_tracker.model.Parcel;
 import com.example.parcel_tracker.model.ParcelStatusEnum;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -14,4 +15,7 @@ public interface ParcelRepository extends JpaRepository<Parcel, Long> {
     Optional<Parcel> findByTrackingCode(String trackingCode);
     List<Parcel> findByStatus(ParcelStatusEnum status);
     Optional<Parcel> findById(long id);
+
+    @Query("SELECT p.status, COUNT(p) FROM Parcel p GROUP BY p.status")
+    List<Object[]> countParcelsByStatus();
 }
